@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { logger } from "@/lib/logger"
+import { logger } from "@/lib/api/logger"
 import type { ApiError, ApiResponse } from "@/types/api"
 
 /**

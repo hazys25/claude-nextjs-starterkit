@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 // 본문용 / 코드용 폰트를 CSS 변수로 등록 (globals.css 의 --font-sans, --font-mono 와 연결)
@@ -28,14 +29,25 @@ export default function RootLayout({
 }>) {
   return (
     // 한국어 사이트이므로 lang="ko" 로 지정
+    // suppressHydrationWarning: next-themes 가 <html> class 를 바꾸면서 생기는
+    //   서버/클라이언트 불일치 경고를 의도적으로 무시 (테마 적용에 필수)
     <html
       lang="ko"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
-        {/* 전역 토스트(알림)를 한 번만 배치 — 어디서든 toast() 호출 시 여기서 렌더링된다. */}
-        <Toaster richColors position="top-center" />
+        {/* 테마(라이트/다크) Provider — 기본은 현재 형태(라이트), 시스템 자동전환은 끔 */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          {children}
+          {/* 전역 토스트(알림) — Provider 안에 둬야 토스트도 현재 테마를 따른다. */}
+          <Toaster richColors position="top-center" />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/common/page-header";
+import { ThemeToggle } from "@/components/common/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -109,10 +110,14 @@ export default function Home() {
           title="웹 개발 스타터킷"
           description="아래 예제들이 모두 동작하면 개발 환경이 정상적으로 준비된 것입니다."
         />
-        <Button variant="outline" size="sm" onClick={onLogout}>
-          <LogOut />
-          로그아웃
-        </Button>
+        {/* 우측: 테마 전환 + 로그아웃 */}
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button variant="outline" size="sm" onClick={onLogout}>
+            <LogOut />
+            로그아웃
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6">

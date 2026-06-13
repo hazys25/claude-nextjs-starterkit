@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { ThemeToggle } from "@/components/common/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -64,7 +65,11 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex flex-1 items-center justify-center px-6 py-12">
+    <main className="relative flex flex-1 items-center justify-center px-6 py-12">
+      {/* 로그인 전에도 테마를 바꿀 수 있도록 우측 상단에 토글 배치 */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>관리자 로그인</CardTitle>

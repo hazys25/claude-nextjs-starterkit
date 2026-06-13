@@ -31,7 +31,7 @@ pnpm dev
 ```
 
 브라우저에서 [http://localhost:3000](http://localhost:3000) 을 열면
-Zustand 카운터 / 문의 폼(검증 + API) 예제가 동작합니다.
+스타터 킷의 특징을 소개하는 랜딩 화면이 나타납니다. (`/login` 으로 관리자 로그인 후 접근)
 
 ## 주요 스크립트
 
@@ -47,9 +47,9 @@ Zustand 카운터 / 문의 폼(검증 + API) 예제가 동작합니다.
 ```
 src/
 ├─ app/
-│  ├─ api/example/route.ts   # 통일된 API 응답 + Zod 검증 + 로깅 샘플 라우트
+│  ├─ api/auth/              # 로그인 / 로그아웃 라우트 (통일된 API 응답 + 로깅)
 │  ├─ layout.tsx             # 루트 레이아웃 (전역 Toaster 배치)
-│  ├─ page.tsx               # 스타터킷 데모 홈
+│  ├─ page.tsx               # 스타터킷 소개 랜딩 화면
 │  └─ globals.css            # Tailwind v4 + 테마 토큰
 ├─ components/
 │  ├─ ui/                    # shadcn/ui 컴포넌트 (button, input, card, form ...)
@@ -61,10 +61,8 @@ src/
 │  ├─ api-response.ts        # successResponse / errorResponse 헬퍼
 │  ├─ logger.ts              # 공통 로거 (에러 적재)
 │  └─ utils.ts               # cn() 등 유틸
-├─ stores/
-│  └─ counter-store.ts       # Zustand 상태관리 예제
 ├─ schemas/
-│  └─ contact-schema.ts      # Zod 검증 스키마 예제
+│  └─ login-schema.ts        # 로그인 폼 Zod 검증 스키마
 └─ types/
    └─ api.ts                 # ApiResponse<T> 등 공통 타입
 ```

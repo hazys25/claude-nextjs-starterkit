@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 
-import { successResponse } from "@/lib/api-response"
+import { successResponse } from "@/lib/api/api-response"
 import { SESSION_COOKIE_NAME } from "@/lib/auth/session"
 
 /**

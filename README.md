@@ -53,18 +53,23 @@ src/
 │  └─ globals.css            # Tailwind v4 + 테마 토큰
 ├─ components/
 │  ├─ ui/                    # shadcn/ui 컴포넌트 (button, input, card, form ...)
-│  └─ common/                # 프로젝트 공통 컴포넌트 (예: page-header)
+│  ├─ common/                # 프로젝트 공통 컴포넌트 (page-header, theme-toggle)
+│  └─ providers/             # 전역 Provider (theme-provider)
 ├─ lib/
 │  ├─ supabase/
 │  │  ├─ client.ts           # 브라우저용 Supabase 클라이언트
 │  │  └─ server.ts           # 서버용 Supabase 클라이언트 (쿠키 연동)
-│  ├─ api-response.ts        # successResponse / errorResponse 헬퍼
-│  ├─ logger.ts              # 공통 로거 (에러 적재)
-│  └─ utils.ts               # cn() 등 유틸
+│  ├─ auth/
+│  │  └─ session.ts          # JWT 세션 발급/검증 (jose)
+│  ├─ api/
+│  │  ├─ api-response.ts     # successResponse / errorResponse 헬퍼
+│  │  └─ logger.ts           # 공통 로거 (에러 적재)
+│  └─ utils.ts               # cn() 등 유틸 (shadcn 표준 경로)
 ├─ schemas/
 │  └─ login-schema.ts        # 로그인 폼 Zod 검증 스키마
-└─ types/
-   └─ api.ts                 # ApiResponse<T> 등 공통 타입
+├─ types/
+│  └─ api.ts                 # ApiResponse<T> 등 공통 타입
+└─ middleware.ts             # 전체 페이지 보호 + 로그인 리다이렉트
 ```
 
 ## 핵심 규칙 (CLAUDE.md 기반)

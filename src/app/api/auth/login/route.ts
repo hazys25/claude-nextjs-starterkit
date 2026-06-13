@@ -2,13 +2,13 @@ import { timingSafeEqual } from "crypto"
 import { cookies } from "next/headers"
 import { type NextRequest } from "next/server"
 
-import { errorResponse, successResponse } from "@/lib/api-response"
+import { errorResponse, successResponse } from "@/lib/api/api-response"
 import {
   SESSION_COOKIE_NAME,
   SESSION_MAX_AGE,
   signSession,
 } from "@/lib/auth/session"
-import { logger } from "@/lib/logger"
+import { logger } from "@/lib/api/logger"
 import { loginSchema } from "@/schemas/login-schema"
 
 /**

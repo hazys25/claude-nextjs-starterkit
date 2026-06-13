@@ -31,10 +31,11 @@ export default function RootLayout({
     // 한국어 사이트이므로 lang="ko" 로 지정
     // suppressHydrationWarning: next-themes 가 <html> class 를 바꾸면서 생기는
     //   서버/클라이언트 불일치 경고를 의도적으로 무시 (테마 적용에 필수)
+    // scroll-smooth: 퀵 버튼(앵커 링크) 클릭 시 해당 섹션으로 부드럽게 스크롤
     <html
       lang="ko"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* 테마(라이트/다크) Provider — 기본은 현재 형태(라이트), 시스템 자동전환은 끔 */}

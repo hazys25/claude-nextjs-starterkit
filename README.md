@@ -1,0 +1,121 @@
+# 웹 개발 스타터킷 (Next.js Starter Kit)
+
+바로 기능 개발을 시작할 수 있도록 구성한 풀스택 웹 스타터킷입니다.
+Next.js 15 App Router 위에 인증/DB/상태관리/폼 검증의 기본 골격과 공통 규칙을 미리 세팅해두었습니다.
+
+## 기술 스택
+
+| 영역 | 기술 |
+|------|------|
+| 프레임워크 | Next.js 15 (App Router) + React 19 |
+| 언어 | TypeScript |
+| 스타일 | Tailwind CSS v4 |
+| UI | shadcn/ui (Base UI 기반) |
+| 백엔드 | Supabase (`@supabase/ssr`) |
+| 상태관리 | Zustand |
+| 폼 / 검증 | React Hook Form + Zod |
+| 패키지 매니저 | pnpm |
+
+## 빠른 시작
+
+```bash
+# 1. 의존성 설치
+pnpm install
+
+# 2. 환경변수 파일 생성 (Supabase 사용 시)
+cp .env.example .env.local        # Windows PowerShell: Copy-Item .env.example .env.local
+#   → .env.local 에 Supabase URL / anon 키를 채워 넣으세요.
+
+# 3. 개발 서버 실행
+pnpm dev
+```
+
+브라우저에서 [http://localhost:3000](http://localhost:3000) 을 열면
+Zustand 카운터 / 문의 폼(검증 + API) 예제가 동작합니다.
+
+## 주요 스크립트
+
+| 명령어 | 설명 |
+|--------|------|
+| `pnpm dev` | 개발 서버 실행 |
+| `pnpm build` | 프로덕션 빌드 |
+| `pnpm start` | 빌드 결과 실행 |
+| `pnpm lint` | ESLint 검사 (커밋 전 실행 권장) |
+
+## 폴더 구조
+
+```
+src/
+├─ app/
+│  ├─ api/example/route.ts   # 통일된 API 응답 + Zod 검증 + 로깅 샘플 라우트
+│  ├─ layout.tsx             # 루트 레이아웃 (전역 Toaster 배치)
+│  ├─ page.tsx               # 스타터킷 데모 홈
+│  └─ globals.css            # Tailwind v4 + 테마 토큰
+├─ components/
+│  ├─ ui/                    # shadcn/ui 컴포넌트 (button, input, card, form ...)
+│  └─ common/                # 프로젝트 공통 컴포넌트 (예: page-header)
+├─ lib/
+│  ├─ supabase/
+│  │  ├─ client.ts           # 브라우저용 Supabase 클라이언트
+│  │  └─ server.ts           # 서버용 Supabase 클라이언트 (쿠키 연동)
+│  ├─ api-response.ts        # successResponse / errorResponse 헬퍼
+│  ├─ logger.ts              # 공통 로거 (에러 적재)
+│  └─ utils.ts               # cn() 등 유틸
+├─ stores/
+│  └─ counter-store.ts       # Zustand 상태관리 예제
+├─ schemas/
+│  └─ contact-schema.ts      # Zod 검증 스키마 예제
+└─ types/
+   └─ api.ts                 # ApiResponse<T> 등 공통 타입
+```
+
+## 핵심 규칙 (CLAUDE.md 기반)
+
+- **통일된 API 응답**: 모든 라우트 핸들러는 `successResponse` / `errorResponse` 로 응답합니다.
+  응답은 항상 `{ success, data }` 또는 `{ success, error }` 형태입니다. (`src/types/api.ts`)
+- **에러 핸들링 + 로깅**: 에러 발생 시 `logger` 로 로그를 적재합니다. (`errorResponse` 내부에서 자동 처리)
+- **검증 일원화**: Zod 스키마(`src/schemas`)를 클라이언트 폼과 서버 API 가 함께 재사용합니다.
+- **코드 컨벤션**: 주석/문서는 한국어, 변수·함수명은 영어 풀네임으로 작성합니다.
+
+## 관리자 인증
+
+env 기반 ID/PW 를 **JWT 세션 쿠키(HTTP-only)** 로 관리하는 자체 인증이 포함되어 있습니다.
+미들웨어가 모든 페이지를 보호하며, 비로그인 시 `/login` 으로 리다이렉트합니다. (`/login` 만 예외)
+
+- 기본 계정: `.env.local` 의 `ADMIN_USERNAME` / `ADMIN_PASSWORD` (기본값 `admin` / 설정한 비밀번호)
+- 세션 서명 키: `.env.local` 의 `SESSION_SECRET` (무작위 값, 외부 노출 금지)
+
+| 파일 | 역할 |
+|------|------|
+| `src/middleware.ts` | 전체 페이지 보호 + 로그인 리다이렉트 |
+| `src/lib/auth/session.ts` | JWT 발급/검증 (jose, Edge 호환) |
+| `src/app/api/auth/login/route.ts` | 로그인 (타이밍 안전 비교 후 쿠키 발급) |
+| `src/app/api/auth/logout/route.ts` | 로그아웃 (쿠키 삭제) |
+| `src/app/login/page.tsx` | 로그인 폼 (RHF + Zod) |
+
+> ⚠️ 운영 환경에서는 `SESSION_SECRET` 을 반드시 새 값으로 교체하고, 단일 관리자 계정 대신
+> Supabase Auth 등 사용자 DB 기반 인증으로 확장하는 것을 권장합니다.
+
+## Supabase 사용 방법
+
+이 스타터킷은 Supabase **클라이언트 설정**만 포함합니다. (실제 프로젝트 생성은 직접 진행)
+
+1. [supabase.com](https://supabase.com) 에서 프로젝트를 생성합니다.
+2. `Project Settings > API` 에서 URL 과 anon 키를 복사해 `.env.local` 에 입력합니다.
+3. 사용처에 맞는 클라이언트를 import 합니다.
+
+```ts
+// 클라이언트 컴포넌트 ("use client")
+import { createClient } from "@/lib/supabase/client";
+const supabase = createClient();
+
+// 서버 컴포넌트 / 라우트 핸들러 / 서버 액션
+import { createClient } from "@/lib/supabase/server";
+const supabase = await createClient();
+```
+
+## 다음 단계 (확장 아이디어)
+
+- **인증 추가**: 세션 자동 갱신용 `middleware.ts` 와 로그인/회원가입 페이지 구성
+- **DB 타입 생성**: `supabase gen types typescript` 로 DB 스키마 타입 자동 생성
+- **컴포넌트 추가**: `pnpm dlx shadcn@latest add <component>` 로 필요한 UI 컴포넌트 설치

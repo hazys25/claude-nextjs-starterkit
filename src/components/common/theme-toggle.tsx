@@ -33,8 +33,9 @@ export function ThemeToggle() {
       // 현재가 다크면 라이트로, 라이트면 다크로 전환
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
-      {/* 마운트 전에는 기본 아이콘(해)을 보여주고, 마운트 후 현재 테마에 맞는 아이콘으로 교체 */}
-      {mounted ? isDark ? <Sun /> : <Moon /> : <Sun />}
+      {/* 마운트 전에는 기본 아이콘(달)을 보여주고, 마운트 후 현재 테마에 맞는 아이콘으로 교체.
+          중첩 삼항 대신 "마운트 전" 분기를 먼저 처리해 의도를 명확히 한다. */}
+      {!mounted ? <Moon /> : isDark ? <Sun /> : <Moon />}
       <span className="sr-only">테마 전환</span>
     </Button>
   );

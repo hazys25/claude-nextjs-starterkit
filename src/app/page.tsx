@@ -1,47 +1,22 @@
-"use client";
-
 import {
   ArrowRight,
   Code,
   Database,
   Layers,
   Lock,
-  LogOut,
   Moon,
   Palette,
   Rocket,
   ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
-import { ThemeToggle } from "@/components/common/theme-toggle";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { GithubIcon } from "@/components/common/github-icon";
+import { SiteHeader } from "@/components/common/site-header";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GITHUB_REPO_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-
-// ── GitHub 로고 아이콘 ──────────────────────────────────────────────
-// lucide-react 1.x 는 상표 정책으로 브랜드 로고(Github 등)를 제거했다.
-// 그래서 공식 GitHub 마크(옥토캣)를 인라인 SVG 로 직접 렌더링한다.
-// className 미지정 시 Button 의 svg 기본 크기 규칙(size-4)을 따른다.
-function GithubIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-      className={className}
-    >
-      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-    </svg>
-  );
-}
-
-// ── GitHub 저장소 주소 (단일 출처) ──────────────────────────────────
-// 하단 CTA 버튼·푸터 링크가 모두 이 상수를 참조한다.
-// 실제 저장소로 교체할 땐 이 한 줄만 수정하면 전체에 반영된다.
-const GITHUB_REPO_URL = "https://github.com/hazys25/claude-nextjs-starterkit";
 
 // ── 스타터 킷 특징 목록 ─────────────────────────────────────────────
 // 히어로 아래 카드 그리드에 그대로 렌더링되는 데이터.
@@ -98,67 +73,13 @@ const features: Feature[] = [
   },
 ];
 
+// 랜딩 페이지 — 정적 콘텐츠 위주라 서버 컴포넌트로 유지한다.
+// 상호작용이 있는 상단 헤더만 SiteHeader(클라이언트 컴포넌트)로 분리했다.
 export default function Home() {
-  // 로그아웃 후 로그인 페이지로 이동하기 위해 사용
-  const router = useRouter();
-
-  // 로그아웃 핸들러 — 세션 쿠키를 삭제하고 로그인 페이지로 이동
-  const onLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      toast.success("로그아웃되었습니다.");
-      router.replace("/login");
-      router.refresh();
-    } catch {
-      toast.error("로그아웃 중 오류가 발생했습니다.");
-    }
-  };
-
   return (
     <div className="flex flex-1 flex-col">
-      {/* ── 상단 네비바 ───────────────────────────────────────────────
-          sticky + 반투명 배경(backdrop-blur)으로 스크롤 시에도 상단에 고정 */}
-      <header className="bg-background/70 sticky top-0 z-50 border-b backdrop-blur">
-        <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-3">
-          {/* 좌측: 브랜드 + 퀵 앵커 링크(데스크탑 전용) */}
-          <div className="flex items-center gap-6">
-            {/* 브랜드 — 그라데이션 점 + 텍스트 */}
-            <div className="flex items-center gap-2">
-              <span className="size-5 rounded-md bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500" />
-              <span className="font-heading text-sm font-semibold tracking-tight">
-                Starter Kit
-              </span>
-            </div>
-            {/* 퀵 앵커 링크 — 페이지 내 해당 섹션으로 부드럽게 스크롤(좁은 화면에선 숨김) */}
-            <div className="text-muted-foreground hidden items-center gap-5 text-sm font-medium md:flex">
-              <a href="#features" className="hover:text-foreground transition-colors">
-                기능
-              </a>
-              <a href="#get-started" className="hover:text-foreground transition-colors">
-                시작하기
-              </a>
-            </div>
-          </div>
-          {/* 우측: 테마 전환 + GitHub + 로그아웃 */}
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            {/* GitHub 아이콘 버튼 — 새 탭으로 저장소 열기 */}
-            <a
-              href={GITHUB_REPO_URL}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="GitHub 저장소 열기"
-              className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
-            >
-              <GithubIcon />
-            </a>
-            <Button variant="outline" size="sm" onClick={onLogout}>
-              <LogOut />
-              로그아웃
-            </Button>
-          </div>
-        </nav>
-      </header>
+      {/* ── 상단 네비바 ─── 로그아웃·테마 전환 등 상호작용 담당(클라이언트 컴포넌트) */}
+      <SiteHeader />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-6">
         {/* ── 히어로 섹션 ─────────────────────────────────────────────

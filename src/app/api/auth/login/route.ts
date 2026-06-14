@@ -20,8 +20,11 @@ import { loginSchema } from "@/schemas/login-schema"
 function isEqualSafe(a: string, b: string): boolean {
   const bufferA = Buffer.from(a)
   const bufferB = Buffer.from(b)
-  // 길이가 다르면 비교 자체가 불가능하므로 즉시 false
+  // 길이가 다르면 timingSafeEqual 이 throw 하므로 비교할 수 없다.
+  // 단, 여기서 곧장 return 하면 "길이 일치 여부"가 응답 시간으로 새어나갈 수 있어,
+  // 의도적으로 동일 길이 더미 비교(bufferA vs bufferA)를 한 번 수행해 실행 시간을 균일화한 뒤 false 를 반환한다.
   if (bufferA.length !== bufferB.length) {
+    timingSafeEqual(bufferA, bufferA)
     return false
   }
   return timingSafeEqual(bufferA, bufferB)

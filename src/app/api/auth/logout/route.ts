@@ -1,7 +1,7 @@
 import { cookies } from "next/headers"
 
-import { errorResponse, successResponse } from "@/lib/api/api-response"
-import { SESSION_COOKIE_NAME } from "@/lib/auth/session"
+import { errorResponse, successResponse } from "@/lib/server/api-response"
+import { SESSION_COOKIE_NAME } from "@/lib/server/session"
 
 /**
  * 로그아웃 API (POST /api/auth/logout)

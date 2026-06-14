@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server"
 
-import { SESSION_COOKIE_NAME, verifySession } from "@/lib/auth/session"
+import { SESSION_COOKIE_NAME, verifySession } from "@/lib/server/session"
 
 /**
  * 인증 미들웨어 — 모든 페이지 요청을 가로채 로그인 여부를 확인한다.

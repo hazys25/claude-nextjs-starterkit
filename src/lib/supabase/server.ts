@@ -14,9 +14,21 @@ export async function createClient() {
   // 현재 요청에 포함된 쿠키 저장소
   const cookieStore = await cookies()
 
+  // Supabase 연결 정보 (.env.local 에 설정)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // 환경변수가 없으면 SDK 내부에서 불명확한 오류가 나기 전에 명시적으로 throw
+  // (session.ts 의 SESSION_SECRET 누락 시 즉시 throw 하는 패턴과 일관성 유지)
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error(
+      "NEXT_PUBLIC_SUPABASE_URL 또는 NEXT_PUBLIC_SUPABASE_ANON_KEY 환경변수가 설정되지 않았습니다.",
+    )
+  }
+
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         // 요청에 담긴 모든 쿠키를 Supabase 에 전달
@@ -30,6 +42,7 @@ export async function createClient() {
               cookieStore.set(name, value, options),
             )
           } catch {
+            // 의도적으로 무시(예외 객체를 쓰지 않으므로 바인딩 생략):
             // 서버 컴포넌트에서 호출되면 쿠키 쓰기가 막혀 예외가 발생할 수 있다.
             // 미들웨어에서 세션을 갱신하는 구조라면 이 예외는 무시해도 안전하다.
             // (이 스타터킷은 인증 미들웨어를 포함하지 않으므로 참고용 주석으로 남긴다.)

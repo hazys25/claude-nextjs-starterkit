@@ -55,22 +55,24 @@ src/
 │  ├─ ui/                    # shadcn/ui 컴포넌트 (button, input, card, form ...)
 │  ├─ common/                # 프로젝트 공통 컴포넌트 (page-header, theme-toggle)
 │  └─ providers/             # 전역 Provider (theme-provider)
-├─ lib/
-│  ├─ supabase/
-│  │  ├─ client.ts           # 브라우저용 Supabase 클라이언트
-│  │  └─ server.ts           # 서버용 Supabase 클라이언트 (쿠키 연동)
-│  ├─ auth/
-│  │  └─ session.ts          # JWT 세션 발급/검증 (jose)
-│  ├─ api/
+├─ lib/                      # 실행 런타임 기준으로 구분 (server / client / 공유)
+│  ├─ server/                # 서버 전용 — route handler · server action · middleware 에서만 import
 │  │  ├─ api-response.ts     # successResponse / errorResponse 헬퍼
-│  │  └─ logger.ts           # 공통 로거 (에러 적재)
-│  └─ utils.ts               # cn() 등 유틸 (shadcn 표준 경로)
-├─ schemas/
+│  │  ├─ logger.ts           # 공통 로거 (에러 적재)
+│  │  ├─ session.ts          # JWT 세션 발급/검증 (jose)
+│  │  └─ supabase.ts         # 서버용 Supabase 클라이언트 (쿠키 연동)
+│  ├─ client/                # 클라이언트(브라우저) 전용
+│  │  └─ supabase.ts         # 브라우저용 Supabase 클라이언트
+│  ├─ constants.ts           # 공유 상수
+│  └─ utils.ts               # cn() 등 유틸 (shadcn 표준 경로 — 이동 금지)
+├─ schemas/                  # 공유 — Zod 검증 (클라이언트 폼 + 서버 API 재사용)
 │  └─ login-schema.ts        # 로그인 폼 Zod 검증 스키마
-├─ types/
+├─ types/                    # 공유 — 타입 정의
 │  └─ api.ts                 # ApiResponse<T> 등 공통 타입
-└─ middleware.ts             # 전체 페이지 보호 + 로그인 리다이렉트
+└─ middleware.ts             # 전체 페이지 보호 + 로그인 리다이렉트 (위치 고정)
 ```
+
+> **`lib/` 구분 규칙**: `lib/server/` = 서버 전용, `lib/client/` = 브라우저 전용, `lib/` 루트(`constants`·`utils`) = 양쪽 공유. **혼용 금지** — 서버 코드를 클라이언트 컴포넌트에서 import하면 빌드가 깨지거나 비밀값이 노출될 수 있습니다.
 
 ## 핵심 규칙 (CLAUDE.md 기반)
 
@@ -91,7 +93,7 @@ env 기반 ID/PW 를 **JWT 세션 쿠키(HTTP-only)** 로 관리하는 자체 �
 | 파일 | 역할 |
 |------|------|
 | `src/middleware.ts` | 전체 페이지 보호 + 로그인 리다이렉트 |
-| `src/lib/auth/session.ts` | JWT 발급/검증 (jose, Edge 호환) |
+| `src/lib/server/session.ts` | JWT 발급/검증 (jose, Edge 호환) |
 | `src/app/api/auth/login/route.ts` | 로그인 (타이밍 안전 비교 후 쿠키 발급) |
 | `src/app/api/auth/logout/route.ts` | 로그아웃 (쿠키 삭제) |
 | `src/app/login/page.tsx` | 로그인 폼 (RHF + Zod) |
@@ -109,11 +111,11 @@ env 기반 ID/PW 를 **JWT 세션 쿠키(HTTP-only)** 로 관리하는 자체 �
 
 ```ts
 // 클라이언트 컴포넌트 ("use client")
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/client/supabase";
 const supabase = createClient();
 
 // 서버 컴포넌트 / 라우트 핸들러 / 서버 액션
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/server/supabase";
 const supabase = await createClient();
 ```
 
